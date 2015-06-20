@@ -5,6 +5,8 @@
 #include <linux/netfilter.h>
 #include <linux/netfilter_ipv4.h>
 #include <linux/netdevice.h>
+#include <linux/ip.h>
+#include <linux/tcp.h>
 
 
 MODULE_LICENSE("GPL");
@@ -17,6 +19,13 @@ unsigned int filter_hook(unsigned int hooknum, struct sk_buff *skb,
         const struct net_device *in, const struct net_device *out,
         int (*okfn)(struct sk_buff *))  
 {
+    struct iphdr* ip_header;
+    ip_header  = ip_hdr(skb);
+
+    printk(KERN_INFO "PACKET FILTER : IP Address: %pI4 Protocol: %x\n",
+            &ip_header->saddr,
+            skb->protocol);
+
     if (!strcmp(in->name, "lo") && skb->protocol == 8)
     {
         printk(KERN_INFO "PACKET FILTER: Mumbai local\n");
